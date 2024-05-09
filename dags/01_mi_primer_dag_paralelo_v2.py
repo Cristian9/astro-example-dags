@@ -15,10 +15,13 @@ default_args = {
 }
 
 def start_process():
-    print(" INICIO EL PROCESO! cambio por remoto en clases 02")
+    print(" INICIO EL PROCESO GIT! Cambio hecho por EgoLuis")
 
 def load_master():
-    print(" Load Master IVAN!")
+    print(" Load Master!")
+    
+def load_master_2():
+    print(" Load Master!")
 
 def load_raw_2():
     print(" Hola Raw 2!")
@@ -26,8 +29,14 @@ def load_raw_2():
 def load_raw_1():
     print(" Hola Raw 1!")
 
+def load_raw_2():
+    print(" Hola Raw 1!")
+    
+def load_bi():
+    print(" Hola Raw 1!")
+    
 with DAG(
-    dag_id="mi_primer_dag_paralelo",
+    dag_id="mi_primer_dag_paralelo_v2",
     schedule="20 04 * * *", 
     start_date=days_ago(2), 
     default_args=default_args,
@@ -53,7 +62,19 @@ with DAG(
         python_callable=load_master,
         dag=dag
     )
+    step_master_2 = PythonOperator(
+        task_id='step_master_2',
+        python_callable=load_master_2,
+        dag=dag
+    )
+    step_bi = PythonOperator(
+        task_id='step_bi',
+        python_callable=load_bi,
+        dag=dag
+    )
     step_start>>step_load_raw_1
     step_start>>step_load_raw_2
     step_load_raw_1>>step_master
-    step_load_raw_2>>step_master
+    step_load_raw_2>>step_master_2
+    step_master>>step_bi
+    step_master_2>>step_bi
